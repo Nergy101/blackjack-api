@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlackJackAPI2.Eventbus;
 using BlackJackAPI2.Model;
 using BlackJackAPI2.Services;
 using Microsoft.AspNetCore.Http;
@@ -14,15 +15,17 @@ namespace BlackJackAPI2.Controllers
     public class BlackJackController : ControllerBase
     {
         ISpelerService _spelerService;
-        public BlackJackController(ISpelerService spelerService)
+        IEventService _eventService;
+        public BlackJackController(ISpelerService spelerService, IEventService eventService)
         {
             _spelerService = spelerService;
+            _eventService = eventService;
         }
         // GET: api/BlackJack
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<int> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _eventService.GetNumbers();
         }
 
         // GET: api/BlackJack/5

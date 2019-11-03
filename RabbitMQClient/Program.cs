@@ -20,6 +20,24 @@ namespace RabbitMQClient
                     new SpelerAgent().StartGame();
                     Console.WriteLine("Starting Game");
                 }
+                else if (input == "#addnumber")
+                {
+                    Console.WriteLine("Getal om te sturen:");
+                    var getal = Console.ReadLine();
+                    string exchangeNameForEvent = "api.events";
+                    var factoryForEvent = new ConnectionFactory() { HostName = "localhost" };
+                    using var connection = factoryForEvent.CreateConnection();
+                    using var channel = connection.CreateModel();
+                    channel.ExchangeDeclare(exchange: exchangeNameForEvent, type: ExchangeType.Topic);
+
+                    var message = getal.ToString();
+                    var body = Encoding.UTF8.GetBytes(message);
+                    channel.BasicPublish(exchange: exchangeNameForEvent,
+                                            routingKey: "api.events.addnumber",
+                                            basicProperties: null,
+                                            body: body);
+
+                }
                 else
                 {
                     var speler = new ToegevoegdeSpeler(input);
@@ -28,10 +46,12 @@ namespace RabbitMQClient
 
                 // RabbitMQ Receive
                 string exchangeName = "speler.events";
+
                 var factory = new ConnectionFactory() { HostName = "localhost" };
                 using (var connection = factory.CreateConnection())
                 using (var channel = connection.CreateModel())
                 {
+                    channel.ExchangeDeclare(exchangeName, ExchangeType.Topic);
                     //channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic);
 
                     var queueName = channel.QueueDeclare().QueueName; // random queuename 

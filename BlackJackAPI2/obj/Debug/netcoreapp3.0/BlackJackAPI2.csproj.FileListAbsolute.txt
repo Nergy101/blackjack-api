@@ -110,3 +110,4 @@ C:\Users\Christian\source\repos\RabbitMQClient\BlackJackAPI2\obj\Debug\netcoreap
 C:\Users\Christian\source\repos\RabbitMQClient\BlackJackAPI2\obj\Debug\netcoreapp3.0\BlackJackAPI2.csproj.CopyComplete
 C:\Users\Christian\source\repos\RabbitMQClient\BlackJackAPI2\obj\Debug\netcoreapp3.0\BlackJackAPI2.dll
 C:\Users\Christian\source\repos\RabbitMQClient\BlackJackAPI2\obj\Debug\netcoreapp3.0\BlackJackAPI2.pdb
+C:\Users\Christian\source\repos\RabbitMQClient\BlackJackAPI2\obj\Debug\netcoreapp3.0\BlackJackAPI2.csprojAssemblyReference.cache

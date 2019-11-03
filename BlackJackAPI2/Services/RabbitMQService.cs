@@ -14,18 +14,16 @@ namespace BlackJackAPI2.Services
         {
             string exchangeName = "speler.events";
             var factory = new ConnectionFactory() { HostName = "localhost" };
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic);
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+            channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic);
 
-                var message = name + " joined";
-                var body = Encoding.UTF8.GetBytes(message);
-                channel.BasicPublish(exchange: exchangeName,
-                                     routingKey: "speler.events.joined",
-                                     basicProperties: null,
-                                     body: body);
-            }
+            var message = name + " joined";
+            var body = Encoding.UTF8.GetBytes(message);
+            channel.BasicPublish(exchange: exchangeName,
+                                 routingKey: "speler.events.joined",
+                                 basicProperties: null,
+                                 body: body);
         }
 
         public void PublishSpelStartEvent()

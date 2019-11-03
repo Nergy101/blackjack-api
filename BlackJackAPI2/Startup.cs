@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlackJackAPI2.Eventbus;
 using BlackJackAPI2.EventBus;
 using BlackJackAPI2.Services;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,8 @@ namespace BlackJackAPI2
         {
             services.AddTransient<ISpelerService, SpelerService>();
             services.AddSingleton<IRabbitMQService, RabbitMQService>();
+            services.AddSingleton<IEventService, EventService>();
+
 
             services.AddSingleton<RabbitMQPersistentConnection>(sp =>
             {
@@ -39,8 +42,8 @@ namespace BlackJackAPI2
                 {
                     HostName = "localhost"
                 };
-
-                return new RabbitMQPersistentConnection(factory);
+                var eventService = sp.GetRequiredService<IEventService>();
+                return new RabbitMQPersistentConnection(factory, eventService);
             });
 
 

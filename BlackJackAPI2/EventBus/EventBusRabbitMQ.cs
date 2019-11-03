@@ -15,12 +15,14 @@ namespace BlackJackAPI2.Eventbus
         private readonly IRabbitMQPersistentConnection _persistentConnection;
         private IModel _consumerChannel;
         private string _queueName;
+        private readonly IEventService _eventService;
         //UserService _userService = new UserService();
 
-        public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, string queueName = null)
+        public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, IEventService eventService, string queueName = null)
         {
             _persistentConnection = persistentConnection ?? throw new ArgumentNullException(nameof(persistentConnection));
             _queueName = queueName;
+            _eventService = eventService;
         }
 
         public IModel CreateConsumerChannel()
@@ -39,6 +41,9 @@ namespace BlackJackAPI2.Eventbus
             else
             {
                 channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueBind(queue: _queueName,
+                  exchange: "api.events",
+                  routingKey: "api.events.*");
             }
             var consumer = new EventingBasicConsumer(channel);
 
@@ -65,18 +70,15 @@ namespace BlackJackAPI2.Eventbus
 
         private void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
-            if (e.RoutingKey == "userInsertMsgQ")
-            {
-                //var message = Encoding.UTF8.GetString(e.Body);
-                //List<User> userList = JsonConvert.DeserializeObject<List<User>>(message);
-                //UserSaveFeedback saveFeedback = _userService.InsertUsers(userList);
-
-                //PublishUserSaveFeedback("userInsertMsgQ_feedback", saveFeedback, e.BasicProperties.Headers);
-            }
-
-            if (e.RoutingKey == "emailSendMsgQ")
+            if (e.RoutingKey == "api.events.removenumber")
             {
                 //Implementation here
+            }
+
+            if (e.RoutingKey == "api.events.addnumber")
+            {
+                var numberToAdd=int.Parse(Encoding.UTF8.GetString(e.Body));
+                _eventService.AddNumber(numberToAdd);
             }
         }
 

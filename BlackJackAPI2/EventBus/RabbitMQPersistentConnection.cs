@@ -17,10 +17,12 @@ namespace BlackJackAPI2.EventBus
         private readonly IConnectionFactory _connectionFactory;
         EventBusRabbitMQ _eventBusRabbitMQ;
         IConnection _connection;
+        IEventService _eventService;
         bool _disposed;
 
-        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory)
+        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, IEventService eventService)
         {
+            _eventService = eventService;
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             if (!IsConnected)
             {
@@ -36,16 +38,16 @@ namespace BlackJackAPI2.EventBus
             }
 
             //CHannel 01
-            _eventBusRabbitMQ = new EventBusRabbitMQ(this, "userInsertMsgQ"); // centralized queue
+            _eventBusRabbitMQ = new EventBusRabbitMQ(this, _eventService, "api.events"); // centralized queue
             _eventBusRabbitMQ.CreateConsumerChannel();
 
             //CHannel 02
-            _eventBusRabbitMQ = new EventBusRabbitMQ(this, "emailSendMsgQ"); // centralized queue
-            _eventBusRabbitMQ.CreateConsumerChannel();
+            //_eventBusRabbitMQ = new EventBusRabbitMQ(this, _eventService, "emailSendMsgQ"); // centralized queue
+            //_eventBusRabbitMQ.CreateConsumerChannel();
 
-            //CHannel 03
-            _eventBusRabbitMQ = new EventBusRabbitMQ(this); // centralized queue
-            _eventBusRabbitMQ.CreateConsumerChannel();
+            ////CHannel 03
+            //_eventBusRabbitMQ = new EventBusRabbitMQ(this, _eventService); // centralized queue
+            //_eventBusRabbitMQ.CreateConsumerChannel();
         }
 
         public void Disconnect()
